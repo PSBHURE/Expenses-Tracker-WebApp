@@ -2,17 +2,17 @@ version: "3.8"
 
 services: 
   nginx: 
-  build: ./nginx
-  image: nginx
-  container_name: "nginx_cont"
-  ports: 
-    - "80:80"
-  restart: always
-  depends_on: 
-    mainapp: 
-      condition: service_healthy
-  networks:
-    - appbridge
+    build: ./nginx
+    image: nginx
+    container_name: "nginx_cont"
+    ports: 
+      - "80:80"
+    restart: always
+    depends_on: 
+      mainapp: 
+        condition: service_healthy
+    networks:
+      - appbridge
 
   mysql: 
     image: mysql:latest
