@@ -45,6 +45,18 @@ resource "aws_vpc_security_group_ingress_rule" "Allow_MySQL" {
   }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "Allow_SpringBoot" {
+  security_group_id = aws_security_group.CustomCG.id
+  cidr_ipv4 = var.VPC_CIDR
+  from_port = 8080
+  to_port = 8080
+  ip_protocol = "tcp"
+    tags = {
+    name = "Allow_SpringBoot"
+    description = "Allow_SpringBoot"
+  }
+}
+
 resource "aws_vpc_security_group_ingress_rule" "Allow_Nginex" {
   security_group_id = aws_security_group.CustomCG.id
   cidr_ipv4 = var.VPC_CIDR
