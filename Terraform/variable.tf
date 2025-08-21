@@ -18,5 +18,10 @@ variable public_route_table {  #we are doing this because we want to connect two
     default = "0.0.0.0/0"
 }
 
+variable public_CIDR {  
+    type = string
+    default = "0.0.0.0/0"
+}
+
 
 
