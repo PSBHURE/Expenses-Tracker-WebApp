@@ -6,7 +6,7 @@ resource "aws_key_pair" "terra_aws_key" {
 resource "aws_instance" "Public_Server" {
     depends_on = [ aws_security_group.CustomCG ]
   ami = "ami-021a584b49225376d"
-  instance_type = "t2.micro"
+  instance_type = "t2.small"
   key_name = aws_key_pair.terra_aws_key.key_name
   subnet_id = aws_subnet.pub_subnet.id
   vpc_security_group_ids = [aws_security_group.CustomCG.id]

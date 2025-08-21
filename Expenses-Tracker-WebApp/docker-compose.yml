@@ -1,25 +1,14 @@
 version: "3.8"
 
 services: 
-  nginx: 
-    build: ./nginx
-    image: nginx
-    container_name: "nginx_cont"
-    ports: 
-      - "80:80"
-    restart: always
-    depends_on: 
-      mainapp: 
-        condition: service_healthy
-    networks:
-      - appbridge
-
   mysql: 
     image: mysql:latest
     container_name: mysql
     environment: 
       MYSQL_ROOT_PASSWORD: Test@123
       MYSQL_DATABASE: expense_tracker
+    ports: 
+      - "3306:3306"
     volumes: 
       - ./mysql-data:/var/lib/mysql
     networks: 
@@ -32,11 +21,10 @@ services:
       retries: 5
       start_period: 30s
 
-  mainapp: 
+  java_app: 
     build: 
-      content: .
-    image: mainapp
-    container_name: Expensetracker
+      context: .
+    container_name: expensesapp
     environment: 
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/expenses_tracker?allowPublicKeyRetrieval=true&useSSL=false"
