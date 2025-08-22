@@ -1,0 +1,30 @@
+pipeline{
+    agent any
+
+    stages{
+        stage("Code"){
+            steps{
+                echo "This is cloning stage"
+                git url: "", branch: "main"
+            }
+        }
+        stage("Build"){
+            steps{
+                echo "This is building stage"    
+                sh "whoami"
+                sh "docker build -t expensesapp:latest ."
+            }            
+        }
+        stage("Test"){
+            steps{
+                echo "This is Testing stage"        
+            }            
+        }
+        stage("Deploy"){
+            steps{
+                echo "This is Deployment stage"      
+                sh "docker compose up -d"  
+            }            
+        }
+    }
+}
