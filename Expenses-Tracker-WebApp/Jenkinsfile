@@ -5,7 +5,7 @@ pipeline{
         stage("Code"){
             steps{
                 echo "This is cloning stage"
-                git url: "", branch: "main"
+                git url: "https://github.com/PSBHURE/Expenses-Tracker-WebApp.git", branch: "main"
             }
         }
         stage("Build"){

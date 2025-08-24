@@ -11,7 +11,10 @@ resource "aws_instance" "Public_Server" {
   subnet_id = aws_subnet.pub_subnet.id
   vpc_security_group_ids = [aws_security_group.CustomCG.id]
   associate_public_ip_address = true
-  user_data = file("${path.module}/terraform_and_aws_cli_install.sh")
+  user_data = templatefile("${path.module}/main_userdata.sh", {
+  docker   = file("${path.module}/install_docker.sh")
+  jenkins  = file("${path.module}/install_jenkins.sh")
+})
 
   tags = {
     Name = "Public_Server"
