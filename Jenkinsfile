@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label "Terraform-Node"}
 
     environment {
 		AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
