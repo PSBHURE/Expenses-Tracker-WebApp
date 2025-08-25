@@ -19,17 +19,22 @@ pipeline {
             }
         }
 
-        // Normal execution order (Bootstrap first, then Main)
+        // ===========================
+        // APPLY STAGES
+        // ===========================
         stage('Terraform Apply') {
             when { expression { params.ACTION == 'apply' } }
             steps {
                 script {
+                    // Bootstrap: Create backend resources (S3 + DynamoDB)
                     dir('Terraform/bootstrap') {
                         sh "terraform init"
                         sh "terraform plan -out tfplan1"
                         sh "terraform show -no-color tfplan1 > tfplan1.txt"
                         sh "terraform apply -auto-approve"
                     }
+
+                    // Main Infra
                     dir('Terraform') {
                         sh "terraform init"
                         sh "terraform plan -out tfplan"
@@ -40,17 +45,22 @@ pipeline {
             }
         }
 
-        // Reverse execution order for destroy
+        // ===========================
+        // DESTROY STAGES
+        // ===========================
         stage('Terraform Destroy') {
             when { expression { params.ACTION == 'destroy' } }
             steps {
                 script {
+                    // Destroy main infra first
                     dir('Terraform') {
                         sh "terraform init"
                         sh "terraform destroy -auto-approve"
                     }
+
+                    // Switch backend to local before destroying S3 + DynamoDB
                     dir('Terraform/bootstrap') {
-                        sh "terraform init"
+                        sh "terraform init -migrate-state -backend=false"
                         sh "terraform destroy -auto-approve"
                     }
                 }
