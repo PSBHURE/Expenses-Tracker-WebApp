@@ -10,6 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps { 
+				cleanWs()
                 git branch: 'main', url: 'https://github.com/PSBHURE/Expenses-Tracker-WebApp.git'
             }
         }		
