@@ -8,38 +8,29 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/PSBHURE/Expenses-Tracker-WebApp.git'
+            }
+        }		
 		stage('Backend Creation') {
 			steps {
-				dir('bootstrap'){
+				dir('Expenses-Tracker-WebApp/Terraform/bootstrap'){
 					sh "terraform init"
 					sh "terraform plan -out tfplan1"
 					sh "terraform show -no-color tfplan1 > tfplan1.txt"
 				}
 			}		
 		}
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/PSBHURE/Expenses-Tracker-WebApp.git'
-            }
-        }
         stage('Terraform init') {
             steps {
+				dir('Expenses-Tracker-WebApp/Terraform'){
                 sh "terraform init"
-            }
-        }
-        stage('Plan') {
-            steps {
                 sh "terraform plan -out tfplan"
                 sh "terraform show -no-color tfplan > tfplan.txt"
+                sh "terraform apply -auto-approve"
+				}
             }
         }
-        stage('Apply') {
-            steps {
-                script {
-                    sh "terraform apply -auto-approve"
-                }
-            }
-        }
-
     }
 }
