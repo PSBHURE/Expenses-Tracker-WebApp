@@ -58,8 +58,9 @@ pipeline {
                         sh "terraform destroy -auto-approve"
                     }
 
-                    // Switch backend to local before destroying S3 + DynamoDB
+                    // Now migrate backend state to local before destroying bootstrap
                     dir('Terraform/bootstrap') {
+                        // Migrate away from S3/DynamoDB so Terraform can destroy them
                         sh "terraform init -migrate-state -backend=false"
                         sh "terraform destroy -auto-approve"
                     }
