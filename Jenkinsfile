@@ -15,7 +15,7 @@ pipeline {
         }		
 		stage('Backend Creation') {
 			steps {
-				dir('Expenses-Tracker-WebApp/Terraform/bootstrap'){
+				dir('Terraform/bootstrap'){
 					sh "terraform init"
 					sh "terraform plan -out tfplan1"
 					sh "terraform show -no-color tfplan1 > tfplan1.txt"
@@ -24,7 +24,7 @@ pipeline {
 		}
         stage('Terraform init') {
             steps {
-				dir('Expenses-Tracker-WebApp/Terraform'){
+				dir('Terraform'){
                 sh "terraform init"
                 sh "terraform plan -out tfplan"
                 sh "terraform show -no-color tfplan > tfplan.txt"
