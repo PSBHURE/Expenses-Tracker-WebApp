@@ -20,6 +20,7 @@ pipeline {
 					sh "terraform init"
 					sh "terraform plan -out tfplan1"
 					sh "terraform show -no-color tfplan1 > tfplan1.txt"
+                    sh "terraform apply -auto-approve"
 				}
 			}		
 		}
