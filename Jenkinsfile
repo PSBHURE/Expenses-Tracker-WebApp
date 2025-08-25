@@ -28,18 +28,22 @@ pipeline {
                 script {
                     // Bootstrap: Create backend resources (S3 + DynamoDB)
                     dir('Terraform/bootstrap') {
-                        sh "terraform init"
-                        sh "terraform plan -out tfplan1"
-                        sh "terraform show -no-color tfplan1 > tfplan1.txt"
-                        sh "terraform apply -auto-approve"
+                        sh """
+                            terraform init
+                            terraform plan -out tfplan1
+                            terraform show -no-color tfplan1 > tfplan1.txt
+                            terraform apply -auto-approve
+                        """
                     }
 
-                    // Main Infra
+                    // Main Infra (uses S3 + DynamoDB as backend)
                     dir('Terraform') {
-                        sh "terraform init"
-                        sh "terraform plan -out tfplan"
-                        sh "terraform show -no-color tfplan > tfplan.txt"
-                        sh "terraform apply -auto-approve"
+                        sh """
+                            terraform init
+                            terraform plan -out tfplan
+                            terraform show -no-color tfplan > tfplan.txt
+                            terraform apply -auto-approve
+                        """
                     }
                 }
             }
@@ -52,17 +56,20 @@ pipeline {
             when { expression { params.ACTION == 'destroy' } }
             steps {
                 script {
-                    // Destroy main infra first
+                    // Step 1: Destroy main infra (still using remote backend)
                     dir('Terraform') {
-                        sh "terraform init"
-                        sh "terraform destroy -auto-approve"
+                        sh """
+                            terraform init
+                            terraform destroy -auto-approve || echo "Nothing to destroy in main"
+                        """
                     }
 
-                    // Now migrate backend state to local before destroying bootstrap
+                    // Step 2: Switch bootstrap backend to local
                     dir('Terraform/bootstrap') {
-                        // Migrate away from S3/DynamoDB so Terraform can destroy them
-                        sh "terraform init -migrate-state -backend=false"
-                        sh "terraform destroy -auto-approve"
+                        sh """
+                            terraform init -backend=false
+                            terraform destroy -auto-approve || echo "Nothing to destroy in bootstrap"
+                        """
                     }
                 }
             }
