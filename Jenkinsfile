@@ -1,51 +1,61 @@
-pipeline{
-	agent {label "Main-Node"}
-	
-	stages{
-		stage("Code"){
-			steps{
-				echo "This is cloaning the code."
-				cleanWs()
+pipeline {
+    agent { label "Main-Node" }
+
+    stages {
+        stage("Code") {
+            steps {
+                echo "Cloning the code..."
+                cleanWs()
                 git branch: 'main', url: 'https://github.com/PSBHURE/Expenses-Tracker-WebApp.git'
-			}
-		}
-		
-		stage("Build"){
-			steps{
-				echo "This is building the code."
-				sh "whoami"
-				 dir("Expenses-Tracker-WebApp"){
-				sh "docker build -t expense-tracker-app:latest ."
-				 }
-			}
-		}
-		
-		stage("Push to Dockerhub"){
-			steps{
-				echo "This is pushing docker image into DockerHub."
-				
-				withCredentials([usernamePassword(credentialsId:"DockerHubCred",passwordVariable:"DockerHubPass",usernameVariable:"DockerHubUser")]){
-				sh "docker login -u ${env.DockerHubUser} -p ${env.DockerHubPass}"
-				sh "docker image tag expense-tracker-app:latest ${env.DockerHubUser}/expense-tracker-app:latest"
-				sh "docker push ${env.DockerHubUser}/expense-tracker-app:latest"
-				}	
-			}
-		}
-		
-		stage("Deploy"){
-			steps{
-				echo "This is deploying the code."
-				
-				sh "docker compose up"
-				
-				echo "code is up and running."
-			}
-		}
-		
-		stage("Feedback"){
-			steps{
-				echo "Jenkins Run Sucsessfully...!!!"
-			}
-		}		
-	}
+            }
+        }
+
+        stage("Build") {
+            steps {
+                echo "Building the code..."
+                sh "whoami"
+                dir("Expenses-Tracker-WebApp") {
+                    sh "docker build -t expense-tracker-app:latest ."
+                }
+            }
+        }
+
+        stage("Push to Dockerhub") {
+            steps {
+                echo "Pushing Docker image to DockerHub..."
+
+                withCredentials([usernamePassword(
+                    credentialsId: "DockerHubCred",
+                    usernameVariable: "DockerHubUser",
+                    passwordVariable: "DockerHubPass"
+                )]) {
+                    sh '''
+                        docker login -u $DockerHubUser -p $DockerHubPass
+                        docker tag expense-tracker-app:latest $DockerHubUser/expense-tracker-app:latest
+                        docker push $DockerHubUser/expense-tracker-app:latest
+                    '''
+                }
+            }
+        }
+
+        stage("Deploy") {
+            steps {
+                echo "Deploying the code..."
+
+                // Optional: stop any previous containers
+                sh "docker compose down || true"
+
+                // Start the containers
+                sh "docker compose up -d"
+
+                echo "Application is up and running."
+            }
+        }
+
+        stage("Feedback") {
+            steps {
+                echo "Jenkins pipeline ran successfully! ✅"
+            }
+        }
+    }
 }
