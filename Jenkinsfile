@@ -24,7 +24,7 @@ pipeline{
 			steps{
 				echo "This is pushing docker image into DockerHub."
 				
-				WithCredentials([usernamePassword('credentialsId':"DockerHubCred",passwordVariable:"DockerHubPass",usernameVariable:"DockerHubUser")]){
+				withCredentials([usernamePassword('credentialsId':"DockerHubCred",passwordVariable:"DockerHubPass",usernameVariable:"DockerHubUser")]){
 				sh "docker login -u ${env.DockerHubUser} -p ${env.DockerHubPass}"
 				sh "docker image tag expense-tracker-app:latest ${env.DockerHubUser}/expense-tracker-app:latest"
 				sh "docker push ${env.DockerHubUser}/expense-tracker-app:latest"
