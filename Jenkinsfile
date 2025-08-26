@@ -24,16 +24,18 @@ pipeline {
             steps {
                 echo "Pushing Docker image to DockerHub..."
 
-                withCredentials([usernamePassword(
-                    credentialsId: "DockerHubCred",
-                    usernameVariable: "DockerHubUser",
-                    passwordVariable: "DockerHubPass"
-                )]) {
-                    sh '''
-                        docker login -u $DockerHubUser -p $DockerHubPass
-                        docker tag expense-tracker-app:latest $DockerHubUser/expense-tracker-app:latest
-                        docker push $DockerHubUser/expense-tracker-app:latest
-                    '''
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: "DockerHubCred",
+                        usernameVariable: "DockerHubUser",
+                        passwordVariable: "DockerHubPass"
+                    )]) {
+                        sh '''
+                            docker login -u $DockerHubUser -p $DockerHubPass
+                            docker tag expense-tracker-app:latest $DockerHubUser/expense-tracker-app:latest
+                            docker push $DockerHubUser/expense-tracker-app:latest
+                        '''
+                    }
                 }
             }
         }
